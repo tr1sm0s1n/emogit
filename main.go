@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	version      = "v0.0.1 (pre-release)"
+	version      = "v1.0.0 (NOX)"
 	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#DC143C"))
 	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#696969"))
 	cursorStyle  = focusedStyle
