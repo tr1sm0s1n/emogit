@@ -4,8 +4,11 @@ package main
 // from the Bubbles component library.
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -16,6 +19,7 @@ import (
 )
 
 var (
+	version      = "v0.0.1 (pre-release)"
 	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#DC143C"))
 	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#696969"))
 	cursorStyle  = focusedStyle
@@ -30,6 +34,7 @@ type model struct {
 	inputs     []textinput.Model
 	cursorMode cursor.Mode
 	message    string
+	exec       bool
 }
 
 func initialModel() model {
@@ -92,8 +97,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if s == "enter" && m.focusIndex == len(m.inputs) {
 				i, _ := strconv.Atoi(m.inputs[0].Value())
 				emo := strings.Split(emojis[i], " ")[0]
-				m.message = fmt.Sprintf("git commit -m '%s | %s'", emo, m.inputs[1].Value())
-				fmt.Println("Message:", m.message)
+				m.message = fmt.Sprintf("%s | %s", emo, m.inputs[1].Value())
+				m.Execute()
 				return m, tea.Quit
 			}
 
@@ -165,13 +170,48 @@ func (m model) View() string {
 	return b.String()
 }
 
+func (m model) Execute() {
+	if m.exec {
+		cmd := exec.Command("git", "commit", "-m", m.message)
+		stdoutPipe, _ := cmd.StdoutPipe()
+		stderrPipe, _ := cmd.StderrPipe()
+
+		cmd.Start()
+
+		cmdLog := func(r io.Reader) {
+			s := bufio.NewScanner(r)
+			for s.Scan() {
+				fmt.Print("\033[2K\r")
+				fmt.Println(s.Text())
+			}
+		}
+
+		go cmdLog(stdoutPipe)
+		go cmdLog(stderrPipe)
+
+		cmd.Wait()
+	} else {
+		fmt.Println("Message:", m.message)
+	}
+}
+
 func main() {
+	m := initialModel()
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "v", "version":
+			fmt.Println(version)
+			return
+		case "x", "execute":
+			m.exec = true
+		}
+	}
+
 	fmt.Println("Targets:")
 	for i, v := range emojis {
 		fmt.Printf("%d:[%s] ", i, v)
 	}
 	fmt.Println()
-	m := initialModel()
 	if _, err := tea.NewProgram(m).Run(); err != nil {
 		fmt.Printf("could not start program: %s\n", err)
 		os.Exit(1)
