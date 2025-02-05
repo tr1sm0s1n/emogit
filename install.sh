@@ -40,11 +40,22 @@ parse_args() {
 execute() {
     tmpdir=$(mktemp -d)
     log_debug "downloading files into ${tmpdir}"
+     if [ "$OS" = "windows" ]; then
+        TARBALL="${PROJECT_NAME}_${VERSION}_${OS}_${ARCH}.zip"
+        TARBALL_URL="${GITHUB_DOWNLOAD}/${VERSION}/${ARCHIVE}"
+    fi
     http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
     http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
     hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
     srcdir="${tmpdir}"
-    (cd "${tmpdir}" && untar "${TARBALL}")
+    
+    # Extract based on OS
+    if [ "$OS" = "windows" ]; then
+        powershell.exe -nologo -noprofile -command \
+            "Expand-Archive -Path '${tmpdir}/${ARCHIVE}' -DestinationPath '${tmpdir}'" || exit 1
+    else
+        (cd "${tmpdir}" && untar "${TARBALL}")
+    fi
     test ! -d "${BINDIR}" && install -d "${BINDIR}"
     for binexe in $BINARIES; do
         if [ "$OS" = "windows" ]; then
