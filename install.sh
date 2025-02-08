@@ -40,30 +40,13 @@ parse_args() {
 execute() {
     tmpdir=$(mktemp -d)
     log_debug "downloading files into ${tmpdir}"
-     if [ "$OS" = "windows" ]; then
-        TARBALL="${PROJECT_NAME}_${VERSION}_${OS}_${ARCH}.zip"
-        TARBALL_URL="${GITHUB_DOWNLOAD}/${VERSION}/${ARCHIVE}"
-    fi
     http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
     http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
     hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
     srcdir="${tmpdir}"
-    
-    # Extract based on OS
-    if [ "$OS" = "windows" ]; then
-        powershell.exe -nologo -noprofile -command \
-            "Expand-Archive -Path '${tmpdir}/${ARCHIVE}' -DestinationPath '${tmpdir}'" || exit 1
-    else
-        (cd "${tmpdir}" && untar "${TARBALL}")
-    fi
+    (cd "${tmpdir}" && untar "${TARBALL}")
+
     test ! -d "${BINDIR}" && install -d "${BINDIR}"
-    for binexe in $BINARIES; do
-        if [ "$OS" = "windows" ]; then
-            binexe="${binexe}.exe"
-        fi
-        install "${srcdir}/${binexe}" "${BINDIR}/"
-        log_info "installed ${BINDIR}/${binexe}"
-    done
     rm -rf "${tmpdir}"
 }
 get_binaries() {
@@ -73,8 +56,6 @@ get_binaries() {
     linux/386) BINARIES="emogit" ;;
     linux/amd64) BINARIES="emogit" ;;
     linux/arm64) BINARIES="emogit" ;;
-    windows/386) BINARIES="emogit" ;;
-    windows/amd64) BINARIES="emogit" ;;
     *)
         log_crit "platform $PLATFORM is not supported.  Make sure this script is up-to-date and file request at https://github.com/${PREFIX}/issues/new"
         exit 1
@@ -183,9 +164,6 @@ uname_arch() {
     i686) arch="386" ;;
     i386) arch="386" ;;
     aarch64) arch="arm64" ;;
-    armv5*) arch="armv5" ;;
-    armv6*) arch="armv6" ;;
-    armv7*) arch="armv7" ;;
     esac
     echo ${arch}
 }
@@ -193,19 +171,15 @@ uname_os_check() {
     os=$(uname_os)
     case "$os" in
     darwin) return 0 ;;
-    dragonfly) return 0 ;;
-    freebsd) return 0 ;;
     linux) return 0 ;;
-    android) return 0 ;;
-    nacl) return 0 ;;
-    netbsd) return 0 ;;
-    openbsd) return 0 ;;
-    plan9) return 0 ;;
-    solaris) return 0 ;;
-    windows) return 0 ;;
     esac
-    log_crit "uname_os_check '$(uname -s)' got converted to '$os' which is not a GOOS value."
-    return 1
+    if [ "$os" = "windows" ]; then
+        log_info "windows installation isn't possible using sh. Visit https://github.com/${PREFIX} for other options."
+        return 1
+    else
+        log_crit "binary isn't available for '$os'."
+        return 1
+    fi
 }
 uname_arch_check() {
     arch=$(uname_arch)
@@ -213,19 +187,8 @@ uname_arch_check() {
     386) return 0 ;;
     amd64) return 0 ;;
     arm64) return 0 ;;
-    armv5) return 0 ;;
-    armv6) return 0 ;;
-    armv7) return 0 ;;
-    ppc64) return 0 ;;
-    ppc64le) return 0 ;;
-    mips) return 0 ;;
-    mipsle) return 0 ;;
-    mips64) return 0 ;;
-    mips64le) return 0 ;;
-    s390x) return 0 ;;
-    amd64p32) return 0 ;;
     esac
-    log_crit "uname_arch_check '$(uname -m)' got converted to '$arch' which is not a GOARCH value."
+    log_crit "binary isn't available for '$arch'."
     return 1
 }
 untar() {
@@ -355,8 +318,8 @@ log_prefix() {
 PLATFORM="${OS}/${ARCH}"
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
 
-uname_os_check "$OS"
-uname_arch_check "$ARCH"
+uname_os_check
+uname_arch_check
 
 parse_args "$@"
 
