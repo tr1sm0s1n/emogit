@@ -172,7 +172,7 @@ func (m model) View() string {
 
 func (m model) Execute() {
 	if m.exec {
-		cmd := exec.Command("git", "commit", "-m", m.message)
+		cmd := exec.Command("git", "commit", "-s", "-m", m.message)
 		stdoutPipe, _ := cmd.StdoutPipe()
 		stderrPipe, _ := cmd.StderrPipe()
 
