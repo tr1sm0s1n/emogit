@@ -47,6 +47,10 @@ execute() {
     (cd "${tmpdir}" && untar "${TARBALL}")
 
     test ! -d "${BINDIR}" && install -d "${BINDIR}"
+    for bin in $BINARIES; do
+        install "${srcdir}/${bin}" "${BINDIR}/"
+        log_info "installed ${BINDIR}/${bin}"
+    done
     rm -rf "${tmpdir}"
 }
 get_binaries() {
@@ -168,7 +172,7 @@ uname_arch() {
     echo ${arch}
 }
 uname_os_check() {
-    os=$(uname_os)
+    os=$1
     case "$os" in
     darwin) return 0 ;;
     linux) return 0 ;;
@@ -182,7 +186,7 @@ uname_os_check() {
     fi
 }
 uname_arch_check() {
-    arch=$(uname_arch)
+    arch=$1
     case "$arch" in
     386) return 0 ;;
     amd64) return 0 ;;
@@ -318,8 +322,8 @@ log_prefix() {
 PLATFORM="${OS}/${ARCH}"
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
 
-uname_os_check
-uname_arch_check
+uname_os_check "${OS}"
+uname_arch_check "${ARCH}"
 
 parse_args "$@"
 
