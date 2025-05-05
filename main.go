@@ -47,6 +47,7 @@ func initialModel() model {
 		t = textinput.New()
 		t.Cursor.Style = cursorStyle
 		t.CharLimit = 32
+		t.Width = 32
 
 		switch i {
 		case 0:
@@ -57,6 +58,7 @@ func initialModel() model {
 		case 1:
 			t.Placeholder = "Commit message"
 			t.CharLimit = 72
+			t.Width = 72
 		}
 
 		m.inputs[i] = t
