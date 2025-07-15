@@ -1,6 +1,6 @@
-package main
+package assets
 
-var emojis = []string{
+var Emojis = []string{
 	"➕ (add)",
 	"🍱 (assets)",
 	"🛂 (auth)",
