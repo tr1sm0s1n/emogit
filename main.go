@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	version = "v1.2.0 (Rahu)"
+	version = "v2.0.0 (Shin)"
 )
 
 func main() {
