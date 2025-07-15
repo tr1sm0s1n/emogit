@@ -140,7 +140,7 @@ func (m stageModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.cursor >= len(m.files) {
 				m.cursor = len(m.files) - 1
 			}
-		case "right":
+		case "tab":
 			n := initialCommitModel()
 			return n, n.Init()
 		}
@@ -157,7 +157,7 @@ func (m stageModel) View() string {
 	}
 
 	var b strings.Builder
-	b.WriteString("▲/▼: navigate, enter: toggle, a: stage all, r: refresh, ▶: next, esc: quit\n\n")
+	b.WriteString("▲/▼: navigate, enter: toggle, a: stage all, r: refresh, tab: next, esc: quit\n\n")
 
 	for i, f := range m.files {
 		line := f.path

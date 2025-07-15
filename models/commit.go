@@ -91,7 +91,7 @@ func (m commitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 
 		// Set focus to next input
-		case "tab", "shift+tab", "enter", "up", "down":
+		case "enter", "up", "down":
 			s := msg.String()
 
 			// Did the user press enter while the Commit button was focused?
@@ -105,7 +105,7 @@ func (m commitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			// Cycle indexes
-			if s == "up" || s == "shift+tab" {
+			if s == "up" {
 				m.focusIndex--
 			} else {
 				m.focusIndex++
@@ -133,7 +133,7 @@ func (m commitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			return m, tea.Batch(cmds...)
-		case "left":
+		case "shift+tab":
 			n := InitialStageModel()
 			return n, n.Init()
 		}
@@ -159,7 +159,7 @@ func (m *commitModel) updateInputs(msg tea.Msg) tea.Cmd {
 
 func (m commitModel) View() string {
 	var b strings.Builder
-	b.WriteString("▲/▼: navigate, enter: proceed, ◀: previous, esc: quit\n\n")
+	b.WriteString("▲/▼: navigate, enter: proceed, shift+tab: previous, esc: quit\n\n")
 	b.WriteString("Targets:\n")
 
 	lineLen := 0
