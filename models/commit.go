@@ -162,10 +162,13 @@ func (m commitModel) View() string {
 	b.WriteString("▲/▼: navigate, enter: proceed, shift+tab: previous, esc: quit\n\n")
 	b.WriteString("Targets:\n")
 
+	maxIdxWidth := len(fmt.Sprintf("%d", len(assets.Emojis)-1))
 	lineLen := 0
+
 	for i, v := range assets.Emojis {
-		s := fmt.Sprintf("%d:[%s] ", i, v)
-		strLen := runewidth.StringWidth(s) // ✅ handle emoji widths
+		s := fmt.Sprintf("%*d:[%s] ", maxIdxWidth, i, v)
+		strLen := runewidth.StringWidth(s)
+
 		if lineLen+strLen > m.width {
 			b.WriteRune('\n')
 			lineLen = 0
