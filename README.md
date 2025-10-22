@@ -26,7 +26,7 @@ curl -sSfL https://raw.githubusercontent.com/tr1sm0s1n/emogit/main/install.sh | 
 <summary>Windows</summary>
 
 ```powershell
-irm "https://raw.githubusercontent.com/tr1sm0s1n/emogit/main/win-stall.ps1" | iex
+irm "https://raw.githubusercontent.com/tr1sm0s1n/emogit/main/winstall.ps1" | iex
 ```
 
 </details>
