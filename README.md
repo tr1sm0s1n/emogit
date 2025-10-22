@@ -2,16 +2,13 @@
 
 Commit your changes with emotions. 😌😎😩🫣😵‍💫
 
+[![Go Version](https://img.shields.io/github/go-mod/go-version/tr1sm0s1n/emogit)](./go.mod)
+[![Go Reference](https://pkg.go.dev/badge/github.com/tr1sm0s1n/emogit.svg)](https://pkg.go.dev/github.com/tr1sm0s1n/emogit)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tr1sm0s1n/emogit)](https://goreportcard.com/report/github.com/tr1sm0s1n/emogit)
+[![Release](https://img.shields.io/github/v/release/tr1sm0s1n/emogit)](https://github.com/tr1sm0s1n/emogit/releases)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
+
 ## 🚀 Installation
-
-<details>
-<summary>Go</summary>
-
-```go
-go install github.com/tr1sm0s1n/emogit@latest
-```
-
-</details>
 
 <details>
 <summary>Linux/macOS</summary>
@@ -31,14 +28,11 @@ irm "https://raw.githubusercontent.com/tr1sm0s1n/emogit/main/winstall.ps1" | iex
 
 </details>
 
-## 📜 License
+<details>
+<summary>Go</summary>
 
-Click [here](./LICENSE.md).
+```go
+go install github.com/tr1sm0s1n/emogit@latest
+```
 
-## 🎗️ Contributing
-
-Click [here](./CONTRIBUTING.md).
-
-## ⚖️ Code of Conduct
-
-Click [here](./CODE_OF_CONDUCT.md).
+</details>
