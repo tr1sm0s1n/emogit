@@ -3,6 +3,7 @@ package models
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -62,12 +63,25 @@ func getUpdatedFiles() ([]fileStatus, error) {
 	return files, nil
 }
 
+func goRepoRoot() error {
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	out, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+
+	return os.Chdir(strings.TrimSpace(string(out)))
+}
+
 func toggleStage(f fileStatus) error {
 	var cmd *exec.Cmd
 	if f.staged {
 		cmd = exec.Command("git", "reset", "--", f.path) // unstage
 	} else {
 		cmd = exec.Command("git", "add", "--", f.path) // stage
+	}
+	if err := goRepoRoot(); err != nil {
+		return err
 	}
 	return cmd.Run()
 }
@@ -84,6 +98,9 @@ func stageAll(files []fileStatus) error {
 	}
 	if len(args) == 2 { // nothing to stage
 		return nil
+	}
+	if err := goRepoRoot(); err != nil {
+		return err
 	}
 	return exec.Command("git", args...).Run()
 }
